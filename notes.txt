@@ -1,0 +1,2 @@
+Must sample evenly among months because month is correlated to usage
+Ignore season and use month, since month is more fine grained than season
