@@ -1,2 +1,3 @@
-Must sample evenly among months because month is correlated to usage
-Ignore season and use month, since month is more fine grained than season
+Must sample evenly among months because month is correlated to usage -> somewhat better result
+Ignore season and use month, since month is more fine grained than season -> much better result
+Tried RandomForestTree, Decision Tree, ExtraTrees. Decision Tree gave best result.
