@@ -17,16 +17,14 @@ from sklearn.metrics import confusion_matrix
 
 # Normalize. Returns a mask
 def normalize(dataMat):
-    cc = 0
     mask = np.ones(len(dataMat[1]), dtype=bool)
     for col in range(0,len(dataMat[1])):
-        if max(dataMat[:,cc]) == 0:
-            mask[cc] = False
+        if max(dataMat[:,col]) == 0:
+            mask[col] = False
         else:
-            dataMat[:,cc] = dataMat[:,cc]/max(dataMat[:,cc])
-            if np.var(dataMat[:,cc])<=0.015:
-                mask[cc]=False
-        cc += 1
+            dataMat[:,col] = dataMat[:,col]/max(dataMat[:,col])
+            if np.var(dataMat[:,col])<=0.015:
+                mask[col]=False
     return mask
 	
 def matCopy(mat, rows, rowt) :
@@ -104,12 +102,11 @@ for count in range(1,rowCount):
 	testTargetID.append(testd[count][0])
 
 ################################### Process #####################################
-# colToSkip = normalize(trainData)
-# maskedTrD = trainData[:,colToSkip]
+normalize(fakeTrain)
+normalize(fakeTest)
 
 # normalize(testData)
-# maskedTD = testData[:,colToSkip]
-
+# testData = testData
 
 #################################### Classfiy ####################################
 #NCclf = NearestCentroid()
@@ -137,7 +134,7 @@ for count in range(1,rowCount):
 #GDBclf = GradientBoostingClassifier(n_estimators = 100)
 #GDBprediction = GDBclf.fit(maskedTrD,target).predict(maskedTD)
 
-RCFclf = RandomForestClassifier(n_estimators=10,max_features=9)
+RCFclf = RandomForestClassifier(n_estimators=20)
 RCFpredictionC = RCFclf.fit(fakeTrain,fakeTrainTargetC).predict(fakeTest)
 RCFpredictionR = RCFclf.fit(fakeTrain,fakeTrainTargetR).predict(fakeTest)
 RCFprediction = map(add, RCFpredictionR, RCFpredictionC)
@@ -169,29 +166,29 @@ prediction = map(add,TclfpredictionR,TclfpredictionC)
 
 ##################################### Evaluate ####################################
 
-# numCorr = 0
-# ii = 0
-# totalR = 0
-# totalT = 0
-# totalE = 0
-# for ii in range(0,len(fakeTestTargetC)) :
-	# totalR += math.pow(math.log(RCFprediction[ii]+1)-math.log(fakeTestTarget[ii]+1),2)
-	# totalT += math.pow(math.log(Tclfprediction[ii]+1)-math.log(fakeTestTarget[ii]+1),2)
-	# totalE += math.pow(math.log(ETclfprediction[ii]+1)-math.log(fakeTestTarget[ii]+1),2)
-# accuracyR = math.sqrt(totalR/len(fakeTestTargetC))
-# accuracyT = math.sqrt(totalT/len(fakeTestTargetC))
-# accuracyE = math.sqrt(totalE/len(fakeTestTargetC))
-# print("RCF's Accuracy :",accuracyR)
-# print("ET's Accuracy :",accuracyE)
-# print("T's Accuracy :",accuracyT)
+numCorr = 0
+ii = 0
+totalR = 0
+totalT = 0
+totalE = 0
+for ii in range(0,len(fakeTestTargetC)) :
+	totalR += math.pow(math.log(RCFprediction[ii]+1)-math.log(fakeTestTarget[ii]+1),2)
+	totalT += math.pow(math.log(Tclfprediction[ii]+1)-math.log(fakeTestTarget[ii]+1),2)
+	totalE += math.pow(math.log(ETclfprediction[ii]+1)-math.log(fakeTestTarget[ii]+1),2)
+accuracyR = math.sqrt(totalR/len(fakeTestTargetC))
+accuracyT = math.sqrt(totalT/len(fakeTestTargetC))
+accuracyE = math.sqrt(totalE/len(fakeTestTargetC))
+print("RCF's Accuracy :",accuracyR)
+print("ET's Accuracy :",accuracyE)
+print("T's Accuracy :",accuracyT)
 
 
 ############################## write output ###################################
-with open(outPath,'wb') as csvFile:
-   writer = csv.writer(csvFile,delimiter = ',')
-   writer.writerow(['datetime','count'])
-   for ii in range(0,len(prediction)):
-       writer.writerow([testTargetID[ii], prediction[ii]])
+# with open(outPath,'wb') as csvFile:
+   # writer = csv.writer(csvFile,delimiter = ',')
+   # writer.writerow(['datetime','count'])
+   # for ii in range(0,len(prediction)):
+       # writer.writerow([testTargetID[ii], prediction[ii]])
 
 ############################## Confusion Matrix ###############################
 # import matplotlib.pyplot as plt
